@@ -1,0 +1,16 @@
+FROM qwen3.5:35b-a3b
+
+# Otimização de RAM/VRAM: 16K atende aos 10K+ do Crush e reduz gigabytes de KV Cache.
+# A memória liberada puxará mais camadas para a VRAM, elevando os 15 t/s.
+PARAMETER num_ctx 16384
+PARAMETER num_predict 8192
+
+# Previsibilidade estrita para chamadas de API JSON
+PARAMETER temperature 0.1
+PARAMETER top_p 0.9
+
+# Imposição do Contrato Tool Calling
+SYSTEM """You are a headless AI coding agent running inside an automated terminal system (Crush).
+Your primary and ONLY operational mode is to use the provided tools via the native JSON Function Calling API to read files, execute commands, and initialize repositories.
+NEVER output raw textual commands, Markdown placeholders, or pseudo-XML tags like <bash_commands>.
+Analyze the workspace, trigger the correct JSON tool call immediately, and do not provide conversational filler."""
